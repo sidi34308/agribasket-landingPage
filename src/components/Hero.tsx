@@ -40,7 +40,7 @@ export const Hero: React.FC = () => {
               {t('hero.subtitle')}
             </p>
 
-            <div className={`flex gap-4 ${isArabic ? "justify-end flex-row-reverse" : "justify-start"}`}>
+            <div className={`flex gap-4 ${isArabic ? "justify-end flex-row-reverse" : "justify-end flex-row-reverse"}`}>
               <Button variant="ghost" onClick={() => scrollToSection("videoSection")}>
                 {t("hero.learn_more")}
               </Button>
