@@ -19,8 +19,8 @@ export const VideoSection: React.FC = () => {
   };
 
   return (
-    <section className="pb-16" ref={ref}>
-      <div className="container mx-auto px-4">
+    <section className="py-16 h-[50rem] " ref={ref} id="videoSection">
+      <div className="container mx-auto px-4 ">
         <motion.div
           initial={{ opacity: 0, filter: 'blur(10px)' }}
           animate={isInView ? { opacity: 1, filter: 'blur(0px)' } : {}}

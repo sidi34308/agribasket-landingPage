@@ -4,12 +4,15 @@ import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link, useLocation } from "react-router-dom";
 
 export const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
+  const [activeSection, setActiveSection] = useState("home");
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -23,11 +26,58 @@ export const Header: React.FC = () => {
         setShowHeader(true); // scrolling up
       }
       lastScrollY.current = currentScrollY;
+
+      // Only update active section if we're on the home page
+      if (location.pathname === "/") {
+        const sections = ["home", "howitworks", "features"];
+        const sectionElements = sections.map((id) =>
+          document.getElementById(id)
+        );
+        const currentSection = sectionElements.find((section, index) => {
+          if (!section) return false;
+          const nextSection = sectionElements[index + 1];
+          const sectionTop = section.offsetTop - 100; // Offset for header height
+
+          if (nextSection) {
+            return (
+              currentScrollY >= sectionTop &&
+              currentScrollY < nextSection.offsetTop - 100
+            );
+          }
+          return currentScrollY >= sectionTop;
+        });
+
+        if (currentSection) {
+          setActiveSection(currentSection.id);
+        }
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [location.pathname]);
+
+  const scrollToSection = (sectionId: string) => {
+    // If we're not on the home page, navigate to home first then scroll
+    if (location.pathname !== "/") {
+      window.location.href = `/#${sectionId}`;
+      return;
+    }
+
+    const section = document.getElementById(sectionId);
+    if (section) {
+      setIsOpen(false);
+      const headerOffset = 80;
+      const elementPosition = section.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <header
@@ -39,56 +89,82 @@ export const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <img
-              src={isArabic ? "/logo/logo-ar.svg" : "/logo/logo-en.svg"}
-              alt="Logo"
-              className="w-32 h-auto"
-            />
+            <Link to="/">
+              <img
+                src={isArabic ? "/logo/logo-ar.svg" : "/logo/logo-en.svg"}
+                alt="Logo"
+                className="w-44 h-auto"
+              />
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6 rtl:space-x-reverse text-xl">
-            <a
-              href="#"
-              className="text-secondary font-medium hover:text-secondary/60 transition-colors"
+            <button
+              onClick={() => scrollToSection("home")}
+              className={`text-secondary font-medium hover:text-primary transition-colors ${
+                location.pathname === "/" && activeSection === "home"
+                  ? "text-primary font-bold"
+                  : ""
+              }`}
             >
               {t("home")}
-            </a>
-            <a
-              href="#"
-              className="text-secondary hover:text-secondary transition-colors"
+            </button>
+            <button
+              onClick={() => scrollToSection("howitworks")}
+              className={`text-secondary hover:text-primary transition-colors ${
+                location.pathname === "/" && activeSection === "howitworks"
+                  ? "text-primary font-bold"
+                  : ""
+              }`}
             >
               {t("howitworks")}
-            </a>
-            <a
-              href="#"
-              className="text-secondary hover:text-secondary transition-colors"
+            </button>
+            <button
+              onClick={() => scrollToSection("features")}
+              className={`text-secondary hover:text-primary transition-colors ${
+                location.pathname === "/" && activeSection === "features"
+                  ? "text-primary font-bold"
+                  : ""
+              }`}
             >
               {t("Features")}
-            </a>
-            <a
-              href="#"
-              className="text-secondary hover:text-secondary transition-colors"
+            </button>
+            <Link
+              to="/contact"
+              className="text-secondary hover:text-primary transition-colors"
             >
               {t("contact")}
-            </a>
-     
+            </Link>
           </nav>
 
           {/* Actions (Language + Buttons) */}
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
-
-            <Button variant="ghost" size="sm">
-              {t("login")}
-            </Button>
-            <Button size="sm" variant="secondary">
-              {t("signup")}
-            </Button>
+            <div className="hidden md:flex gap-2">
+              <Button variant="ghost" size="sm">
+                <a
+                  href={`https://eg.agribasket.co/${isArabic ? "ar" : "en"}/login`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("login")}
+                </a>
+              </Button>
+              <Button size="sm" variant="default">
+                <a
+                  href={`https://eg.agribasket.co/${isArabic ? "ar" : "en"}/register`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("signup")}
+                </a>
+              </Button>
+            </div>
 
             {/* Mobile Menu Toggle */}
             <button
-              className="md:hidden p-2 text-secondary hover:text-secondary"
+              className="md:hidden p-2 text-secondary hover:text-primary"
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -100,40 +176,64 @@ export const Header: React.FC = () => {
       {/* Mobile Dropdown */}
       {isOpen && (
         <div className="md:hidden bg-background border-t">
-          <nav className="flex flex-col space-y-3 p-4">
-            <a
-              href="#"
-              className="text-secondary hover:text-secondary transition-colors"
+          <nav className="flex flex-col gap-4 p-4 text-xl">
+            <button
+              onClick={() => scrollToSection("home")}
+              className={`text-secondary hover:text-primary transition-colors text-left ${
+                location.pathname === "/" && activeSection === "home"
+                  ? "text-primary font-bold"
+                  : ""
+              }`}
             >
               {t("home")}
-            </a>
-            <a
-              href="#"
-              className="text-secondary hover:text-secondary transition-colors"
+            </button>
+            <button
+              onClick={() => scrollToSection("howitworks")}
+              className={`text-secondary hover:text-primary transition-colors text-left ${
+                location.pathname === "/" && activeSection === "howitworks"
+                  ? "text-primary font-bold"
+                  : ""
+              }`}
             >
               {t("howitworks")}
-            </a>
-            <a
-              href="#"
-              className="text-secondary hover:text-secondary transition-colors"
+            </button>
+            <button
+              onClick={() => scrollToSection("features")}
+              className={`text-secondary hover:text-primary transition-colors text-left ${
+                location.pathname === "/" && activeSection === "features"
+                  ? "text-primary font-bold"
+                  : ""
+              }`}
             >
               {t("Features")}
-            </a>
-            <a
-              href="#"
-              className="text-secondary hover:text-secondary transition-colors"
+            </button>
+            <Link
+              to="/contact"
+              className="text-secondary hover:text-primary transition-colors text-left"
+              onClick={() => setIsOpen(false)}
             >
               {t("contact")}
-            </a>
-     
+            </Link>
 
             {/* Mobile buttons */}
             <div className="flex gap-2 pt-3">
               <Button variant="ghost" size="sm" className="flex-1">
-                {t("login")}
+                <a
+                  href={`https://eg.agribasket.co/${isArabic ? "ar" : "en"}/login`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("login")}
+                </a>
               </Button>
               <Button size="sm" variant="default" className="flex-1">
-                {t("signup")}
+                <a
+                  href={`https://eg.agribasket.co/${isArabic ? "ar" : "en"}/register`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("signup")}
+                </a>
               </Button>
             </div>
           </nav>

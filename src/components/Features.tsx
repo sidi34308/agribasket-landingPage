@@ -19,7 +19,7 @@ export const Features: React.FC = () => {
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
-    <section className="h-screen flex items-center" ref={ref}>
+    <section className="min-h-screen flex items-center"  ref={ref} id="features">
       <div className="container mx-auto p-4">
         <motion.h2
           className="text-3xl md:text-4xl font-bold text-center text-primary mb-12"

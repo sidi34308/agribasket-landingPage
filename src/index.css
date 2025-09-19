@@ -27,17 +27,17 @@
 }
 
 /* RTL Support */
-[dir="rtl"] .container {
+/* [dir="rtl"] .container {
   direction: rtl;
-}
+}   */
 
-[dir="rtl"] .flex {
+/* [dir="rtl"] .flex {
   flex-direction: row-reverse;
-}
+} */
 
 [dir="rtl"] .grid {
   direction: rtl;
-}
+} 
 
 /* Arabic typography improvements */
 [dir="rtl"] h1,
@@ -52,7 +52,7 @@
 
 [dir="rtl"] p {
   line-height: 1.6;
-}
+} */
 
 /* English typography */
 [dir="ltr"] h1,

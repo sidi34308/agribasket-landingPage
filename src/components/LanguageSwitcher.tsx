@@ -1,6 +1,6 @@
-import React from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Globe } from 'lucide-react';
+import ReactCountryFlag from 'react-country-flag';
 
 export const LanguageSwitcher: React.FC = () => {
   const { i18n } = useTranslation();
@@ -18,10 +18,25 @@ export const LanguageSwitcher: React.FC = () => {
       className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 hover:border-green-500 transition-colors duration-200"
       aria-label="Switch Language"
     >
-      <Globe className="w-4 h-4" />
-      <span className="text-sm font-medium">
-        {i18n.language === 'ar' ? 'English' : 'العربية'}
-      </span>
+      {i18n.language === 'ar' ? (
+        <>
+          <ReactCountryFlag
+            countryCode="GB"
+            svg
+            style={{ width: '20px', height: '20px', borderRadius: '40%' }}
+          />
+          <span className="text-sm font-medium">English</span>
+        </>
+      ) : (
+        <>
+          <ReactCountryFlag
+            countryCode="EG"
+            svg
+            style={{ width: '20px', height: '20px', borderRadius: '40%' }}
+          />
+          <span className="text-sm font-medium">العربية</span>
+        </>
+      )}
     </button>
   );
 };

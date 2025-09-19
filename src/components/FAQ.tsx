@@ -55,9 +55,9 @@ export const FAQ: React.FC = () => {
                   animate={{ opacity: 1, height: 'auto' }}
                   transition={{ duration: 0.3 }}
                 >
-                  <p className="text-gray-600">
-                    هذا نص تجريبي للإجابة على السؤال. يمكن إضافة المحتوى المناسب هنا.
-                  </p>
+           <p className="text-gray-600">
+  {t(`${faq}.desc`)}
+</p>
                 </motion.div>
               )}
             </motion.div>

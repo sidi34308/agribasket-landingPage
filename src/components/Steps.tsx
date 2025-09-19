@@ -33,7 +33,7 @@ export const Steps: React.FC = () => {
   const lang = i18n.language || 'en';
 
   return (
-    <section className="py-16 " ref={ref}>
+    <section className="py-16 " ref={ref} id="howitworks">
       <div className="container mx-auto px-4">
         <motion.h2
           className="text-3xl md:text-4xl font-bold text-center text-primary mb-12"
